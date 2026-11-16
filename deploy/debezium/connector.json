@@ -1,0 +1,22 @@
+{
+  "connector.class": "io.debezium.connector.postgresql.PostgresConnector",
+  "plugin.name": "pgoutput",
+  "database.hostname": "postgres",
+  "database.port": "5432",
+  "database.user": "marquee",
+  "database.password": "marquee",
+  "database.dbname": "marquee",
+  "topic.prefix": "marquee",
+  "slot.name": "marquee_audit",
+  "publication.name": "marquee_audit",
+  "publication.autocreate.mode": "filtered",
+  "table.include.list": "booking.reservations,booking.seats,payments.payments",
+  "replica.identity.autoset.values": "booking.reservations:FULL,booking.seats:FULL,payments.payments:FULL",
+  "snapshot.mode": "no_data",
+  "decimal.handling.mode": "string",
+  "tombstones.on.delete": "false",
+  "key.converter": "org.apache.kafka.connect.json.JsonConverter",
+  "key.converter.schemas.enable": "false",
+  "value.converter": "org.apache.kafka.connect.json.JsonConverter",
+  "value.converter.schemas.enable": "false"
+}

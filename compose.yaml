@@ -1,0 +1,62 @@
+# The whole application:  docker compose up --build   ->  http://localhost:8080
+# Only the infrastructure (to run the API and web client from source):  docker compose up -d postgres redis
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: marquee
+      POSTGRES_USER: marquee
+      POSTGRES_PASSWORD: marquee
+    # Logical decoding is what Debezium reads (see compose.cdc.yaml). It costs nothing when unused.
+    command: ["postgres", "-c", "wal_level=logical"]
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marquee -d marquee"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+
+  api:
+    build:
+      context: .
+      dockerfile: src/Marquee.Api/Dockerfile
+    environment:
+      ConnectionStrings__Postgres: Host=postgres;Database=marquee;Username=marquee;Password=marquee
+      ConnectionStrings__Redis: redis:6379
+      # Local-only value. A real deployment supplies its own (see deploy/compose.prod.yaml).
+      Sessions__SigningKey: local-compose-signing-key-not-for-production-use
+      Database__MigrateOnStartup: "true"
+      Database__SeedDemoData: "true"
+      # Knobs for trying things out, e.g.  WAITING_ROOM_CAPACITY=1 HOLD_DURATION=00:01:00 docker compose up
+      WaitingRoom__Capacity: ${WAITING_ROOM_CAPACITY:-50}
+      Booking__HoldDuration: ${HOLD_DURATION:-00:08:00}
+    ports:
+      - "5080:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    build: ./web
+    ports:
+      - "8080:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres-data:

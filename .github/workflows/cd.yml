@@ -1,0 +1,78 @@
+name: CD
+
+# Publishing images works as soon as a version tag is pushed.
+# Deploying stays off until a server exists: set the repository variable DEPLOY_ENABLED to "true"
+# and add the secrets listed in docs/deployment.md.
+on:
+  push:
+    tags: ["v*"]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Image tag to deploy (an existing version tag, e.g. v1.0.0)
+        required: true
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_TAG: ${{ inputs.tag || github.ref_name }}
+
+jobs:
+  publish:
+    name: Publish images
+    if: github.event_name == 'push'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v5
+      - name: Log in to the container registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login "$REGISTRY" --username "${{ github.actor }}" --password-stdin
+      - name: Build and push
+        run: |
+          repository=$(echo "$REGISTRY/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          docker build --file src/Marquee.Api/Dockerfile --tag "$repository-api:$IMAGE_TAG" .
+          docker build --tag "$repository-web:$IMAGE_TAG" web
+          docker push "$repository-api:$IMAGE_TAG"
+          docker push "$repository-web:$IMAGE_TAG"
+
+  deploy:
+    name: Deploy to server
+    needs: publish
+    # Runs after a publish, or on its own for a manual redeploy/rollback of an existing tag.
+    if: ${{ !cancelled() && vars.DEPLOY_ENABLED == 'true' && (needs.publish.result == 'success' || needs.publish.result == 'skipped') }}
+    runs-on: ubuntu-latest
+    environment: production
+    concurrency: production
+    steps:
+      - uses: actions/checkout@v5
+      - name: Configure SSH
+        run: |
+          install -d -m 700 ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          echo "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+      - name: Roll out
+        env:
+          TARGET: ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}
+        run: |
+          repository=$(echo "$REGISTRY/${{ github.repository }}" | tr '[:upper:]' '[:lower:]')
+          scp -i ~/.ssh/deploy_key deploy/compose.prod.yaml "$TARGET:/opt/marquee/compose.yaml"
+          ssh -i ~/.ssh/deploy_key "$TARGET" "
+            cd /opt/marquee &&
+            export IMAGE_REPOSITORY=$repository IMAGE_TAG=$IMAGE_TAG &&
+            docker compose pull &&
+            docker compose up --detach --remove-orphans &&
+            docker image prune --force
+          "
+      - name: Check the deployment answers
+        run: |
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent --max-time 5 "${{ vars.DEPLOY_URL }}/health" > /dev/null; then
+              echo "Deployment is healthy."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "The deployment did not become healthy." >&2
+          exit 1

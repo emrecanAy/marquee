@@ -1,0 +1,52 @@
+# Runs on the server as /opt/marquee/compose.yaml (the CD workflow copies it there).
+# Secrets come from /opt/marquee/.env; see docs/deployment.md.
+services:
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: marquee
+      POSTGRES_USER: marquee
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U marquee -d marquee"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  api:
+    image: ${IMAGE_REPOSITORY}-api:${IMAGE_TAG}
+    restart: unless-stopped
+    environment:
+      ConnectionStrings__Postgres: Host=postgres;Database=marquee;Username=marquee;Password=${POSTGRES_PASSWORD}
+      ConnectionStrings__Redis: redis:6379
+      Sessions__SigningKey: ${SESSIONS_SIGNING_KEY:?set SESSIONS_SIGNING_KEY in .env}
+      Database__MigrateOnStartup: "true"
+      Database__SeedDemoData: ${SEED_DEMO_DATA:-false}
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+  web:
+    image: ${IMAGE_REPOSITORY}-web:${IMAGE_TAG}
+    restart: unless-stopped
+    ports:
+      - "${WEB_PORT:-80}:80"
+    depends_on:
+      - api
+
+volumes:
+  postgres-data:
