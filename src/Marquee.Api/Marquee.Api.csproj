@@ -1,0 +1,18 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" />
+    <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" PrivateAssets="all" />
+    <PackageReference Include="Scalar.AspNetCore" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Marquee.Common\Marquee.Common.csproj" />
+    <ProjectReference Include="..\Modules\Marquee.Audit\Marquee.Audit.csproj" />
+    <ProjectReference Include="..\Modules\Marquee.Booking\Marquee.Booking.csproj" />
+    <ProjectReference Include="..\Modules\Marquee.Catalog\Marquee.Catalog.csproj" />
+    <ProjectReference Include="..\Modules\Marquee.Payments\Marquee.Payments.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <InternalsVisibleTo Include="Marquee.Tests" />
+  </ItemGroup>
+</Project>

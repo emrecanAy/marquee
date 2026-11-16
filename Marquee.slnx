@@ -1,0 +1,15 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/Marquee.Api/Marquee.Api.csproj" />
+    <Project Path="src/Marquee.Common/Marquee.Common.csproj" />
+  </Folder>
+  <Folder Name="/src/Modules/">
+    <Project Path="src/Modules/Marquee.Audit/Marquee.Audit.csproj" />
+    <Project Path="src/Modules/Marquee.Booking/Marquee.Booking.csproj" />
+    <Project Path="src/Modules/Marquee.Catalog/Marquee.Catalog.csproj" />
+    <Project Path="src/Modules/Marquee.Payments/Marquee.Payments.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/Marquee.Tests/Marquee.Tests.csproj" />
+  </Folder>
+</Solution>
