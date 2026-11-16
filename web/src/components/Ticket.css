@@ -1,0 +1,91 @@
+.ticket {
+  --notch: 0.7rem;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 11rem;
+  background: var(--paper);
+  color: var(--ink);
+  border-radius: var(--radius);
+  /* Punched notches where the stub tears off. */
+  mask:
+    radial-gradient(circle at calc(100% - 11rem) 0, transparent var(--notch), #000 calc(var(--notch) + 0.5px)) top / 100% 51% no-repeat,
+    radial-gradient(circle at calc(100% - 11rem) 100%, transparent var(--notch), #000 calc(var(--notch) + 0.5px)) bottom / 100% 51% no-repeat;
+}
+
+.ticket__main {
+  padding: 1.5rem 1.75rem;
+}
+
+.ticket__film {
+  font-family: var(--font-display);
+  font-size: var(--step-2);
+  font-weight: 900;
+  line-height: 1;
+  text-transform: uppercase;
+  text-wrap: balance;
+}
+
+.ticket__facts {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.ticket__facts dt {
+  font-size: var(--step--1);
+  color: #6d5560;
+}
+
+.ticket__facts dd {
+  font-weight: 600;
+}
+
+.ticket__stub {
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  gap: 0.35rem;
+  padding: 1.5rem 1rem;
+  border-left: 2px dashed rgb(29 9 21 / 0.35);
+  text-align: center;
+}
+
+.ticket__stub-label {
+  font-size: var(--step--1);
+  color: #6d5560;
+}
+
+.ticket__total {
+  font-family: var(--font-display);
+  font-size: var(--step-3);
+  font-weight: 900;
+  line-height: 1;
+}
+
+.ticket__barcode {
+  display: flex;
+  gap: 2px;
+  height: 3.5rem;
+}
+
+.ticket__barcode span {
+  background: var(--ink);
+}
+
+.ticket__code {
+  font-family: var(--font-display);
+  font-size: var(--step-1);
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+@media (max-width: 30rem) {
+  .ticket {
+    grid-template-columns: 1fr;
+    mask: none;
+  }
+
+  .ticket__stub {
+    border-left: 0;
+    border-top: 2px dashed rgb(29 9 21 / 0.35);
+  }
+}

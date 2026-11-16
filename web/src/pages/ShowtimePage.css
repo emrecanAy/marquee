@@ -1,0 +1,43 @@
+.showtime__header {
+  padding-block: 1.5rem 2.25rem;
+}
+
+.showtime__back {
+  display: inline-block;
+  margin-bottom: 0.75rem;
+  font-size: var(--step--1);
+  color: var(--paper-muted);
+}
+
+.showtime__header h1 {
+  font-size: var(--step-3);
+}
+
+.showtime__when {
+  margin-top: 0.4rem;
+  font-size: var(--step-1);
+  color: var(--bulb);
+}
+
+.queue {
+  max-width: 34rem;
+  padding-block: 1rem 3rem;
+}
+
+.queue__label {
+  font-size: var(--step-1);
+}
+
+.queue__position {
+  font-family: var(--font-display);
+  font-size: clamp(7rem, 26vw, 13rem);
+  font-weight: 900;
+  line-height: 0.9;
+  color: var(--bulb);
+  font-variant-numeric: tabular-nums;
+}
+
+.queue__copy {
+  margin-top: 1.25rem;
+  color: var(--paper-muted);
+}

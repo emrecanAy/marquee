@@ -1,0 +1,30 @@
+.programme {
+  margin-top: 4.5rem;
+}
+
+.programme__grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(10rem, 1fr));
+  gap: 2rem 1.5rem;
+  margin-top: 1.75rem;
+}
+
+.programme__film {
+  display: grid;
+  gap: 0.15rem;
+  text-decoration: none;
+}
+
+.programme__film .poster {
+  margin-bottom: 0.6rem;
+  transition: translate 160ms ease-out;
+}
+
+.programme__film:hover .poster {
+  translate: 0 -4px;
+}
+
+.programme__name {
+  font-weight: 700;
+  line-height: 1.3;
+}

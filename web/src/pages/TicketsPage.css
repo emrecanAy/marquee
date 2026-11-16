@@ -1,0 +1,14 @@
+.tickets {
+  max-width: 38rem;
+  padding-top: 2rem;
+}
+
+.tickets h1 {
+  font-size: var(--step-3);
+}
+
+.tickets ul {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.75rem;
+}

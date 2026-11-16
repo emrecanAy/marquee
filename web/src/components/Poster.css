@@ -1,0 +1,59 @@
+.poster {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  aspect-ratio: 2 / 3;
+  padding: 1rem;
+  overflow: hidden;
+  container-type: inline-size;
+  border-radius: var(--radius);
+  background: linear-gradient(170deg, hsl(var(--hue) 45% 34%), hsl(var(--hue) 55% 14%));
+  color: hsl(var(--hue) 60% 94%);
+  isolation: isolate;
+}
+
+.poster::before {
+  content: '';
+  position: absolute;
+  z-index: -1;
+  background: hsl(var(--hue) 75% 62%);
+}
+
+.poster--sun::before {
+  width: 85%;
+  aspect-ratio: 1;
+  right: -25%;
+  top: 14%;
+  border-radius: 50%;
+}
+
+.poster--beam::before {
+  inset: -20% 35% -20% 35%;
+  rotate: 24deg;
+  opacity: 0.85;
+}
+
+.poster--arch::before {
+  width: 62%;
+  height: 58%;
+  left: 19%;
+  bottom: 0;
+  border-radius: 999px 999px 0 0;
+}
+
+.poster__genre {
+  font-size: var(--step--1);
+  font-weight: 600;
+}
+
+.poster__title {
+  font-family: var(--font-display);
+  /* Sized from the poster itself so the longest word of a title always fits. */
+  font-size: clamp(1.1rem, 16cqi, 2.75rem);
+  font-weight: 900;
+  line-height: 0.98;
+  text-transform: uppercase;
+  text-wrap: balance;
+  text-shadow: 0 2px 12px hsl(var(--hue) 55% 10% / 0.7);
+}

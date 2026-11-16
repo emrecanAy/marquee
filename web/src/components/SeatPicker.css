@@ -1,0 +1,171 @@
+.picker {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(15rem, 19rem);
+  gap: 2.5rem;
+  align-items: start;
+}
+
+.picker__hall {
+  overflow-x: auto;
+  padding: 1.5rem 1rem 1.25rem;
+  border-radius: 10px;
+  background: var(--velvet-deep);
+}
+
+/* A curved strip of light: the brightest thing in the room, as a screen should be. */
+.picker__screen {
+  width: min(100%, 34rem);
+  height: 3.25rem;
+  margin: 0 auto 2.25rem;
+  border-top: 4px solid var(--glow);
+  border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+  background: radial-gradient(ellipse at 50% 0, rgb(191 227 224 / 0.3), transparent 70%);
+  text-align: center;
+}
+
+.picker__screen span {
+  display: inline-block;
+  margin-top: 1.1rem;
+  font-size: var(--step--1);
+  color: var(--glow);
+}
+
+.picker__rows {
+  display: grid;
+  gap: 0.45rem;
+  width: max-content;
+  margin-inline: auto;
+}
+
+.picker__row {
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.picker__row-label {
+  width: 1.25rem;
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--paper-muted);
+}
+
+.seat {
+  display: inline-grid;
+  place-items: center;
+  width: 2rem;
+  height: 1.9rem;
+  padding: 0;
+  border: 0;
+  /* Rounded shoulders and a square base: a cinema seat seen from behind. */
+  border-radius: 9px 9px 3px 3px;
+  background: var(--curtain);
+  box-shadow: inset 0 0 0 1.5px var(--curtain-line);
+  color: var(--paper-muted);
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.seat:hover:not(:disabled) {
+  box-shadow: inset 0 0 0 2px var(--paper);
+  color: var(--paper);
+}
+
+.seat--premium {
+  box-shadow: inset 0 0 0 1.5px var(--bulb);
+}
+
+.seat--selected,
+.seat--selected:hover:not(:disabled) {
+  background: var(--bulb);
+  box-shadow: none;
+  color: var(--ink);
+}
+
+.seat:disabled {
+  cursor: not-allowed;
+}
+
+.seat--held {
+  background: repeating-linear-gradient(135deg, var(--curtain) 0 4px, var(--curtain-line) 4px 8px);
+  box-shadow: none;
+  color: transparent;
+}
+
+.seat--sold {
+  background: #150610;
+  box-shadow: inset 0 0 0 1.5px #341426;
+  color: transparent;
+}
+
+.seat--after-aisle {
+  margin-left: 1.25rem;
+}
+
+.seat--sample {
+  width: 1.1rem;
+  height: 1.05rem;
+  border-radius: 5px 5px 2px 2px;
+  cursor: default;
+  flex: none;
+}
+
+.picker__legend {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem 1.5rem;
+  margin-top: 2rem;
+  font-size: var(--step--1);
+  color: var(--paper-muted);
+}
+
+.picker__legend li {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.picker__summary {
+  position: sticky;
+  top: 1.5rem;
+  display: grid;
+  gap: 1rem;
+  padding: 1.5rem;
+  border-radius: 10px;
+  background: var(--curtain);
+}
+
+.picker__seats,
+.picker__total {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.1;
+}
+
+.picker__seats {
+  font-size: var(--step-2);
+}
+
+.picker__total {
+  margin-top: 0.35rem;
+  font-size: var(--step-3);
+  color: var(--bulb);
+}
+
+@media (max-width: 56rem) {
+  .picker {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  .picker__summary {
+    position: sticky;
+    top: auto;
+    bottom: 0.75rem;
+    box-shadow: 0 -12px 30px var(--velvet);
+  }
+}

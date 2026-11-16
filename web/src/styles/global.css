@@ -1,0 +1,175 @@
+@import '@fontsource-variable/big-shoulders-display';
+@import '@fontsource-variable/figtree';
+
+:root {
+  /* The inside of a cinema: wine-red velvet, tungsten bulbs, the ivory of a backlit sign. */
+  --velvet: #2a0f1e;
+  --velvet-deep: #1d0915;
+  --curtain: #3d1629;
+  --curtain-line: #5c2a43;
+  --bulb: #ffc94a;
+  --paper: #f6ebd6;
+  --paper-muted: #d3bfb6;
+  --glow: #bfe3e0;
+  --ink: #1d0915;
+  --alert: #ff9a85;
+
+  --font-display: 'Big Shoulders Display Variable', 'Arial Narrow', sans-serif;
+  --font-body: 'Figtree Variable', system-ui, sans-serif;
+
+  --step--1: 0.875rem;
+  --step-0: 1rem;
+  --step-1: 1.25rem;
+  --step-2: 1.75rem;
+  --step-3: 2.5rem;
+  --step-4: clamp(2.75rem, 6vw, 4.5rem);
+
+  --page: min(70rem, 100% - 2.5rem);
+  --radius: 6px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  color-scheme: dark;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--velvet);
+  color: var(--paper);
+  font-family: var(--font-body);
+  font-size: var(--step-0);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+p,
+dl,
+dd,
+ul,
+ol {
+  margin: 0;
+  padding: 0;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 800;
+  line-height: 1.02;
+  letter-spacing: 0.01em;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--step-4);
+}
+
+h2 {
+  font-size: var(--step-3);
+}
+
+h3 {
+  font-size: var(--step-2);
+}
+
+a {
+  color: inherit;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+:focus-visible {
+  outline: 2px solid var(--glow);
+  outline-offset: 3px;
+}
+
+.muted {
+  color: var(--paper-muted);
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: 3rem;
+  padding: 0 1.5rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: var(--bulb);
+  color: var(--ink);
+  font-weight: 700;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.button:hover:not(:disabled) {
+  background: #ffd877;
+}
+
+.button:disabled {
+  background: var(--curtain-line);
+  color: var(--paper-muted);
+  cursor: not-allowed;
+}
+
+.button--quiet {
+  background: transparent;
+  color: var(--paper);
+  box-shadow: inset 0 0 0 1px var(--curtain-line);
+}
+
+.button--quiet:hover:not(:disabled) {
+  background: var(--curtain);
+}
+
+.notice {
+  padding: 0.875rem 1rem;
+  border-left: 3px solid var(--alert);
+  background: var(--curtain);
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+.page-state {
+  padding-block: 5rem;
+  max-width: 34rem;
+}
+
+.page-state h1 {
+  font-size: var(--step-3);
+  margin-bottom: 0.75rem;
+}
+
+.page-state .button {
+  margin-top: 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

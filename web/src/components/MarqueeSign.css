@@ -1,0 +1,121 @@
+.sign {
+  padding: 0.875rem;
+  border-radius: 10px;
+  background: var(--velvet-deep);
+  box-shadow: 0 0 0 1px var(--curtain-line), 0 30px 80px -30px rgb(255 201 74 / 0.35);
+}
+
+.sign__bulbs {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.25rem 0.375rem;
+}
+
+.sign__bulbs span {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 50%;
+  background: var(--bulb);
+  box-shadow: 0 0 8px 1px rgb(255 201 74 / 0.8);
+  /* One chase along the row when the sign first appears, then the bulbs stay lit. */
+  animation: bulb-on 500ms ease-out backwards;
+}
+
+@keyframes bulb-on {
+  from {
+    background: var(--curtain-line);
+    box-shadow: none;
+  }
+}
+
+.sign__board {
+  margin-block: 0.75rem;
+  padding: clamp(1.25rem, 4vw, 2.5rem);
+  border-radius: 4px;
+  --rail: 3.25rem;
+  background-color: var(--paper);
+  /* The rails that hold the letters: one between every two lines of the listing. */
+  background-image: repeating-linear-gradient(to bottom, transparent 0 calc(var(--rail) - 2px), rgb(29 9 21 / 0.13) calc(var(--rail) - 2px) var(--rail));
+  background-origin: content-box;
+  color: var(--ink);
+}
+
+.sign__title {
+  font-size: var(--step-4);
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  color: #a3172f;
+  height: calc(var(--rail) * 2);
+  line-height: calc(var(--rail) * 2);
+}
+
+.sign__line {
+  display: flex;
+  align-items: baseline;
+  gap: 0.75rem;
+  height: var(--rail);
+  padding-top: 0.5rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.35rem, 3.2vw, 2rem);
+  font-weight: 800;
+  line-height: 1.15;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  text-decoration: none;
+}
+
+.sign__line:hover .sign__film,
+.sign__line:focus-visible .sign__film {
+  color: #a3172f;
+}
+
+.sign__line:focus-visible {
+  outline-color: var(--ink);
+}
+
+.sign__leader {
+  flex: 1;
+  min-width: 1rem;
+  border-bottom: 3px dotted rgb(29 9 21 / 0.35);
+  translate: 0 -0.3em;
+}
+
+.sign__time {
+  white-space: nowrap;
+}
+
+.sign__empty {
+  font-size: var(--step-1);
+}
+
+@media (max-width: 34rem) {
+  .sign__board {
+    background-image: none;
+  }
+
+  .sign__title {
+    height: auto;
+    line-height: 1;
+    margin-bottom: 0.75rem;
+  }
+
+  .sign__line {
+    flex-wrap: wrap;
+    gap: 0 0.75rem;
+    height: auto;
+    padding-block: 0.3rem;
+  }
+
+  .sign__leader {
+    display: none;
+  }
+
+  .sign__time {
+    color: #a3172f;
+  }
+
+  .sign__bulbs span:nth-child(even) {
+    display: none;
+  }
+}
