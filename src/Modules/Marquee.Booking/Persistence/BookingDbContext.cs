@@ -47,6 +47,7 @@ internal sealed class BookingDbContext(DbContextOptions<BookingDbContext> option
             reservation.Property(r => r.Version).HasColumnName("xmin").HasColumnType("xid").IsRowVersion();
             reservation.HasOne<Screening>().WithMany().HasForeignKey(r => r.ScreeningId);
             reservation.HasIndex(r => r.SessionId);
+            reservation.HasIndex(r => r.AccountId);
             // Only open holds can expire, so the sweeper's index covers just those rows.
             reservation.HasIndex(r => r.ExpiresAt).HasFilter("status = 'Pending'");
         });

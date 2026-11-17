@@ -10,6 +10,7 @@
     <ProjectReference Include="..\Modules\Marquee.Audit\Marquee.Audit.csproj" />
     <ProjectReference Include="..\Modules\Marquee.Booking\Marquee.Booking.csproj" />
     <ProjectReference Include="..\Modules\Marquee.Catalog\Marquee.Catalog.csproj" />
+    <ProjectReference Include="..\Modules\Marquee.Identity\Marquee.Identity.csproj" />
     <ProjectReference Include="..\Modules\Marquee.Payments\Marquee.Payments.csproj" />
   </ItemGroup>
   <ItemGroup>

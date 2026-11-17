@@ -21,7 +21,7 @@ internal static class HoldSeats
         api.MapPost("/showtimes/{showtimeId:guid}/reservations", async (
                 Guid showtimeId, Request request, ClaimsPrincipal user, Handler handler, CancellationToken ct) =>
             {
-                var result = await handler.HandleAsync(showtimeId, user.GetSessionId(), request.Seats ?? [], ct);
+                var result = await handler.HandleAsync(showtimeId, user.GetTicketOwner(), request.Seats ?? [], ct);
                 return result.Match(
                     reservation => Results.Created($"/api/reservations/{reservation.Id}", reservation),
                     error => error.ToProblem());
@@ -41,7 +41,7 @@ internal static class HoldSeats
         private readonly BookingOptions _options = options.Value;
 
         public async Task<Result<ReservationResponse>> HandleAsync(
-            Guid screeningId, Guid sessionId, IReadOnlyList<string> requestedSeats, CancellationToken ct)
+            Guid screeningId, TicketOwner owner, IReadOnlyList<string> requestedSeats, CancellationToken ct)
         {
             var labels = requestedSeats.Distinct(StringComparer.Ordinal).ToList();
             if (labels.Count == 0 || labels.Count > _options.MaxSeatsPerReservation)
@@ -62,13 +62,13 @@ internal static class HoldSeats
                 return Error.Conflict("sales_closed", "Ticket sales for this showtime have closed.");
             }
 
-            if (!await waitingRoom.IsAdmittedAsync(screeningId, sessionId))
+            if (!await waitingRoom.IsAdmittedAsync(screeningId, owner.SessionId))
             {
                 return Error.Forbidden("not_admitted", "Join the waiting room before choosing seats.");
             }
 
             // A customer who goes back and picks again swaps the old selection for the new one.
-            await ReleasePreviousHoldsAsync(screeningId, sessionId, ct);
+            await ReleasePreviousHoldsAsync(screeningId, owner.SessionId, ct);
 
             // 1. Redis: one request wins each seat, everyone else stops here without touching PostgreSQL.
             var reservationId = Guid.CreateVersion7();
@@ -81,7 +81,7 @@ internal static class HoldSeats
             // 2. PostgreSQL: record the hold. The status check catches seats that are held or sold
             //    without a Redis key; the xmin version catches a transaction that changed a seat
             //    after this one read it.
-            var result = await RecordHoldAsync(reservationId, screening, sessionId, labels, now, ct);
+            var result = await RecordHoldAsync(reservationId, screening, owner, labels, now, ct);
             if (!result.IsSuccess)
             {
                 await locks.ReleaseAsync(screeningId, labels, reservationId);
@@ -117,7 +117,7 @@ internal static class HoldSeats
         }
 
         private async Task<Result<ReservationResponse>> RecordHoldAsync(
-            Guid reservationId, Screening screening, Guid sessionId, List<string> labels, DateTimeOffset now,
+            Guid reservationId, Screening screening, TicketOwner owner, List<string> labels, DateTimeOffset now,
             CancellationToken ct)
         {
             var seats = await db.Seats
@@ -137,7 +137,7 @@ internal static class HoldSeats
                 }
             }
 
-            var reservation = Reservation.Hold(reservationId, screening.Id, sessionId, seats, now, _options.HoldDuration);
+            var reservation = Reservation.Hold(reservationId, screening.Id, owner, seats, now, _options.HoldDuration);
             db.Reservations.Add(reservation);
 
             try

@@ -7,6 +7,7 @@
     <Project Path="src/Modules/Marquee.Audit/Marquee.Audit.csproj" />
     <Project Path="src/Modules/Marquee.Booking/Marquee.Booking.csproj" />
     <Project Path="src/Modules/Marquee.Catalog/Marquee.Catalog.csproj" />
+    <Project Path="src/Modules/Marquee.Identity/Marquee.Identity.csproj" />
     <Project Path="src/Modules/Marquee.Payments/Marquee.Payments.csproj" />
   </Folder>
   <Folder Name="/tests/">

@@ -14,6 +14,8 @@ public static class ProblemResults
             ErrorKind.NotFound => StatusCodes.Status404NotFound,
             ErrorKind.Forbidden => StatusCodes.Status403Forbidden,
             ErrorKind.Conflict => StatusCodes.Status409Conflict,
+            ErrorKind.Unauthorized => StatusCodes.Status401Unauthorized,
+            ErrorKind.TooManyRequests => StatusCodes.Status429TooManyRequests,
             _ => StatusCodes.Status500InternalServerError,
         };
 

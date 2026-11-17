@@ -2,6 +2,7 @@ using Marquee.Catalog.Features;
 using Marquee.Catalog.Persistence;
 using Marquee.Common.Messaging;
 using Marquee.Common.Persistence;
+using Marquee.Common.Security;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,10 +17,15 @@ public static class CatalogModule
         services.AddOutbox<CatalogDbContext>();
         services.AddScoped<ShowtimeScheduler>();
         services.AddScoped<DemoProgramme>();
+        services.AddPermissions(ProgrammeEndpoints.Schedule);
         return services;
     }
 
-    public static void MapCatalogEndpoints(this IEndpointRouteBuilder api) => CatalogEndpoints.Map(api);
+    public static void MapCatalogEndpoints(this IEndpointRouteBuilder api)
+    {
+        CatalogEndpoints.Map(api);
+        ProgrammeEndpoints.Map(api);
+    }
 
     public static async Task MigrateCatalogAsync(this IServiceProvider services, bool seedDemoData, CancellationToken ct)
     {

@@ -23,10 +23,9 @@ internal static class ReservationEndpoints
     private static async Task<IReadOnlyList<ReservationResponse>> ListMineAsync(
         ClaimsPrincipal user, BookingDbContext db, CancellationToken ct)
     {
-        var sessionId = user.GetSessionId();
         var rows = await db.Reservations.AsNoTracking()
-            .Where(reservation => reservation.SessionId == sessionId
-                && reservation.Status == ReservationStatus.Confirmed)
+            .Where(Ownership.OwnedBy(user.GetTicketOwner()))
+            .Where(reservation => reservation.Status == ReservationStatus.Confirmed)
             .Join(db.Screenings, reservation => reservation.ScreeningId, screening => screening.Id,
                 (reservation, screening) => new { reservation, screening })
             .OrderByDescending(row => row.screening.StartsAt)
@@ -73,9 +72,8 @@ internal static class ReservationEndpoints
     private static Task<Reservation?> FindOwnAsync(
         IQueryable<Reservation> reservations, Guid reservationId, ClaimsPrincipal user, CancellationToken ct)
     {
-        var sessionId = user.GetSessionId();
-        return reservations.SingleOrDefaultAsync(
-            reservation => reservation.Id == reservationId && reservation.SessionId == sessionId, ct);
+        return reservations.Where(Ownership.OwnedBy(user.GetTicketOwner())).SingleOrDefaultAsync(
+            reservation => reservation.Id == reservationId, ct);
     }
 
     private static Error NotFound() => Error.NotFound("reservation_not_found", "This reservation does not exist.");

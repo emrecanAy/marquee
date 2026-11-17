@@ -20,11 +20,9 @@ internal static class GetSeatMap
     private static async Task<IReadOnlyList<SeatResponse>> HandleAsync(
         Guid showtimeId, ClaimsPrincipal user, BookingDbContext db, CancellationToken ct)
     {
-        var sessionId = user.GetSessionId();
         var myHolds = await db.Reservations
-            .Where(reservation => reservation.ScreeningId == showtimeId
-                && reservation.SessionId == sessionId
-                && reservation.Status == ReservationStatus.Pending)
+            .Where(Ownership.OwnedBy(user.GetTicketOwner()))
+            .Where(reservation => reservation.ScreeningId == showtimeId && reservation.Status == ReservationStatus.Pending)
             .Select(reservation => reservation.Id)
             .ToListAsync(ct);
 

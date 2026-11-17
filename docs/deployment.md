@@ -18,12 +18,16 @@ Until `DEPLOY_ENABLED` is set, the deploy job is skipped and the workflow stays 
    sudo mkdir -p /opt/marquee && sudo chown "$USER" /opt/marquee
    cat > /opt/marquee/.env <<'ENV'
    POSTGRES_PASSWORD=<long random value>
-   SESSIONS_SIGNING_KEY=<at least 32 random characters>
+   IDENTITY_SIGNING_KEY=<at least 32 random characters>
+   IDENTITY_ENCRYPTION_KEY=<at least 32 random characters, different from the signing key>
+   ADMIN_EMAIL=<the first administrator's e-mail>
+   ADMIN_PASSWORD=<at least 12 characters; change it after the first sign-in>
    ENV
    chmod 600 /opt/marquee/.env
    ```
 
-   If the images are private, log the server in once: `docker login ghcr.io`.
+   If the images are private, log the server in once: `docker login ghcr.io`. The site must be served over HTTPS
+   (a reverse proxy in front of the `web` container): the session cookie is sent only over a secure connection.
 
 2. **Create a deploy key** and authorise it on the server:
 
