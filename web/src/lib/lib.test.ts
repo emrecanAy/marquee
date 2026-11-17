@@ -3,6 +3,8 @@ import type { Seat } from '../api/types'
 import { formatCardNumber, tokenizeCard } from './cards'
 import { formatCountdown, formatDuration, relativeDay } from './format'
 import { sortLabels, toRows, totalPrice } from './seats'
+import { safeNext } from '../pages/SignInPage'
+import { describeDevice } from './devices'
 
 const seat = (label: string, price = 100): Seat => ({
   label,
@@ -70,5 +72,19 @@ describe('format', () => {
   it('formats running times', () => {
     expect(formatDuration(127)).toBe('2 h 07 min')
     expect(formatDuration(45)).toBe('45 min')
+  })
+})
+
+describe('sign-in', () => {
+  it('only returns to a path on this site after signing in', () => {
+    expect(safeNext('/tickets')).toBe('/tickets')
+    expect(safeNext('//evil.example/x')).toBe('/')
+    expect(safeNext('https://evil.example')).toBe('/')
+    expect(safeNext(null)).toBe('/')
+  })
+
+  it('names the browser and system of a signed-in device', () => {
+    const firefoxOnWindows = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:133.0) Gecko/20100101 Firefox/133.0'
+    expect(describeDevice(firefoxOnWindows)).toBe('Firefox, Windows')
   })
 })

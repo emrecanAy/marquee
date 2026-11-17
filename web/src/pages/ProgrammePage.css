@@ -1,0 +1,43 @@
+.programme {
+  display: grid;
+  gap: 2rem;
+  padding-block: 2.5rem;
+}
+
+.programme h1 {
+  font-size: var(--step-3);
+  margin-bottom: 0.4rem;
+}
+
+.programme h2 {
+  font-size: var(--step-2);
+  margin-bottom: 0.75rem;
+}
+
+.programme__form {
+  max-width: 36rem;
+}
+
+.programme__added {
+  border-left-color: var(--glow);
+}
+
+.programme__list li {
+  display: grid;
+  grid-template-columns: 12rem minmax(0, 1fr) 10rem 8rem;
+  gap: 1rem;
+  padding-block: 0.7rem;
+  border-top: 1px solid var(--curtain-line);
+}
+
+.programme__when {
+  font-variant-numeric: tabular-nums;
+  color: var(--bulb);
+}
+
+@media (max-width: 48rem) {
+  .programme__list li {
+    grid-template-columns: 1fr;
+    gap: 0.1rem;
+  }
+}

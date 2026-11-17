@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { api, postJson } from './client'
 import type {
   AuditTrail,
+  Me,
   MovieDetails,
   MovieSummary,
   Payment,
@@ -110,4 +111,13 @@ export function useAuditTrail() {
     queryFn: () => api<AuditTrail>('/audit/changes?take=60'),
     refetchInterval: 3000,
   })
+}
+
+export function useMe() {
+  return useQuery({ queryKey: ['me'], queryFn: () => api<Me>('/me'), staleTime: Infinity })
+}
+
+/** Whether to offer a staff screen. The API decides for real; this only hides what it would refuse. */
+export function useCan(permission: string): boolean {
+  return useMe().data?.permissions.includes(permission) ?? false
 }

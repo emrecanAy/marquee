@@ -24,4 +24,8 @@ public static class ProblemResults
             statusCode: status,
             extensions: new Dictionary<string, object?> { ["code"] = error.Code });
     }
+
+    /// <summary>200 with the value, or the problem response for the error.</summary>
+    public static IResult ToHttp<T>(this Result<T> result) =>
+        result.Match(value => Microsoft.AspNetCore.Http.Results.Ok(value), error => error.ToProblem());
 }
