@@ -127,7 +127,7 @@ public sealed class MarqueeApp : IAsyncLifetime
         return (created.Member.Id, member);
     }
 
-    public static void UseSession(HttpClient client, SessionResponse session) =>
+    internal static void UseSession(HttpClient client, SessionResponse session) =>
         client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", session.AccessToken);
 
     /// <summary>A visitor who has already passed the waiting room of the given showtime.</summary>
