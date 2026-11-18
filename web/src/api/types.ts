@@ -87,3 +87,61 @@ export interface AuditTrail {
   enabled: boolean
   changes: ChangeEvent[]
 }
+
+export type Role = 'customer' | 'programmer' | 'auditor' | 'admin'
+
+/** The visitor: always a session, an account once signed in, and the staff screens the account may open. */
+export interface Me {
+  sessionId: string
+  account: {
+    id: string
+    fullName: string
+    email: string
+    role: Role
+    twoStepEnabled: boolean
+    mustChangePassword: boolean
+  } | null
+  /** e.g. "audit.read". The API checks again; this only decides what to offer. */
+  permissions: string[]
+}
+
+export interface SignInResult {
+  session: import('./client').Session | null
+  twoStepTicket: string | null
+}
+
+export interface StaffMember {
+  id: string
+  fullName: string
+  email: string
+  role: Exclude<Role, 'customer'>
+  isActive: boolean
+  twoStepEnabled: boolean
+  mustChangePassword: boolean
+  lastSignInAt: string | null
+}
+
+export interface DeviceSession {
+  id: string
+  device: string | null
+  startedAt: string
+  lastUsedAt: string
+  isCurrent: boolean
+}
+
+export interface Hall {
+  id: string
+  name: string
+  seats: number
+}
+
+export interface PlannedShowtime {
+  id: string
+  movieId: string
+  movieTitle: string
+  hallId: string
+  hallName: string
+  startsAt: string
+  endsAt: string
+  basePrice: number
+}

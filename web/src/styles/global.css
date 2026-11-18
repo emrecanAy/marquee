@@ -93,7 +93,8 @@ a {
 }
 
 button,
-input {
+input,
+select {
   font: inherit;
   color: inherit;
 }
@@ -162,6 +163,111 @@ input {
 
 .page-state .button {
   margin-top: 1.5rem;
+}
+
+.field {
+  display: grid;
+  gap: 0.35rem;
+  font-size: var(--step--1);
+  font-weight: 600;
+}
+
+.field input,
+.field select {
+  width: 100%;
+  min-height: 3rem;
+  padding: 0 0.875rem;
+  border: 1px solid var(--curtain-line);
+  border-radius: var(--radius);
+  background: var(--velvet-deep);
+  font-size: var(--step-0);
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+}
+
+.field input[aria-invalid='true'],
+.field select[aria-invalid='true'] {
+  border-color: var(--alert);
+}
+
+.field-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.field small {
+  font-weight: 400;
+  color: var(--paper-muted);
+}
+
+.check {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.6rem;
+  font-size: var(--step--1);
+}
+
+.check input {
+  margin-top: 0.25rem;
+}
+
+/* A form's own column: fields, one error line, the actions. */
+.form {
+  display: grid;
+  gap: 1.1rem;
+  max-width: 28rem;
+}
+
+.form-error {
+  color: var(--alert);
+  font-weight: 600;
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.panel {
+  padding: 1.25rem 1.4rem;
+  border: 1px solid var(--curtain-line);
+  border-radius: var(--radius);
+  background: var(--curtain);
+}
+
+.tag {
+  display: inline-block;
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--curtain-line);
+  font-size: 0.75rem;
+  font-weight: 700;
+  vertical-align: middle;
+}
+
+.tag--ok {
+  background: var(--glow);
+  color: var(--ink);
+}
+
+.tag--warn {
+  background: var(--bulb);
+  color: var(--ink);
+}
+
+/* A one-time password to pass on: large, easy to read aloud, selected with one click. */
+.secret {
+  padding: 0.9rem 1rem;
+  border-radius: var(--radius);
+  background: var(--velvet-deep);
+  font-size: var(--step-1);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-align: center;
+  user-select: all;
+  font-variant-numeric: tabular-nums;
 }
 
 @media (prefers-reduced-motion: reduce) {

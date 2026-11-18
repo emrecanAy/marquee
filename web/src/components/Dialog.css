@@ -1,0 +1,36 @@
+.dialog {
+  width: min(32rem, 100% - 2rem);
+  padding: 1.5rem;
+  border: 1px solid var(--curtain-line);
+  border-radius: var(--radius);
+  background: var(--velvet-deep);
+  color: var(--paper);
+}
+
+.dialog::backdrop {
+  background: rgb(10 3 8 / 0.7);
+}
+
+.dialog__header {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.1rem;
+}
+
+.dialog__header h2 {
+  font-size: var(--step-2);
+}
+
+.dialog__close {
+  border: 0;
+  background: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.dialog .form {
+  max-width: none;
+}
