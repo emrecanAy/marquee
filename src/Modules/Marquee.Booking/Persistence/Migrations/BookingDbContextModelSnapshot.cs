@@ -30,6 +30,10 @@ namespace Marquee.Booking.Persistence.Migrations
                         .HasColumnType("uuid")
                         .HasColumnName("id");
 
+                    b.Property<Guid?>("AccountId")
+                        .HasColumnType("uuid")
+                        .HasColumnName("account_id");
+
                     b.Property<decimal>("Amount")
                         .HasPrecision(10, 2)
                         .HasColumnType("numeric(10,2)")
@@ -75,6 +79,9 @@ namespace Marquee.Booking.Persistence.Migrations
 
                     b.HasKey("Id")
                         .HasName("pk_reservations");
+
+                    b.HasIndex("AccountId")
+                        .HasDatabaseName("ix_reservations_account_id");
 
                     b.HasIndex("ExpiresAt")
                         .HasDatabaseName("ix_reservations_expires_at")

@@ -12,10 +12,31 @@ jobs:
           global-json-file: global.json
       - run: dotnet tool install --global dotnet-ef --version "10.*"
       - run: dotnet build Marquee.slnx --configuration Release 2>&1 | grep -E " error |warning|Build succeeded" | sort -u | head -60; test ${PIPESTATUS[0]} -eq 0
-      - name: migrations
+      - run: |
+          for module in Audit Booking Catalog Identity Payments; do
+            dotnet ef migrations has-pending-model-changes --no-build --configuration Release --project "src/Modules/Marquee.$module" --startup-project src/Marquee.Api --context "${module}DbContext" 2>&1 | tail -1
+          done
+      - run: dotnet test Marquee.slnx --no-build --configuration Release 2>&1 | grep -E "Passed!|Failed!|\[FAIL\]|error" | head -20
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker compose up -d --build --wait --wait-timeout 300 || (docker compose logs api | tail -60; exit 1)
+      - name: smoke
         run: |
-          dotnet ef migrations add Initial --project src/Modules/Marquee.Identity --startup-project src/Marquee.Api --context IdentityDbContext --output-dir Persistence/Migrations --configuration Release --no-build
-          dotnet ef migrations add ReservationAccount --project src/Modules/Marquee.Booking --startup-project src/Marquee.Api --context BookingDbContext --output-dir Persistence/Migrations --configuration Release --no-build
-          tar czf /tmp/m.tgz src/Modules/Marquee.Identity/Persistence/Migrations src/Modules/Marquee.Booking/Persistence/Migrations
-          echo "MIGRATIONS-BEGIN"; base64 -w0 /tmp/m.tgz; echo; echo "MIGRATIONS-END"
-      - run: dotnet test Marquee.slnx --configuration Release --logger "console;verbosity=normal"
+          set -x
+          H='-H X-Requested-With:marquee -H Content-Type:application/json'
+          B=http://localhost:8080
+          curl -si $B/ | grep -iE "content-security-policy|x-content-type|referrer" || true
+          curl -s -o /dev/null -w "%{http_code}\n" $B/api/audit/changes
+          curl -s -o /dev/null -w "%{http_code}\n" $B/api/movies
+          curl -s -c jar $H -X POST $B/api/auth/session | head -c 200; echo
+          curl -s -o /dev/null -w "nohdr %{http_code}\n" -X POST $B/api/auth/session
+          T=$(curl -s $H -X POST $B/api/auth/sign-in -d '{"email":"denetci@marquee.local","password":"marquee-demo-2026"}' | jq -r .accessToken)
+          curl -s -o /dev/null -w "auditor audit %{http_code}\n" -H "Authorization: Bearer $T" $B/api/audit/changes
+          curl -s -o /dev/null -w "auditor programme %{http_code}\n" -H "Authorization: Bearer $T" $B/api/programme/halls
+          curl -s -o /dev/null -w "auditor staff %{http_code}\n" -H "Authorization: Bearer $T" $B/api/staff
+          A=$(curl -s $H -X POST $B/api/auth/sign-in -d '{"email":"admin@marquee.local","password":"marquee-platform-2026"}' | jq -r .accessToken)
+          curl -s -H "Authorization: Bearer $A" $B/api/staff | head -c 400; echo
+          curl -s -H "Authorization: Bearer $A" $B/api/me; echo
+          curl -sI -H "Authorization: Bearer $A" $B/api/me | grep -iE "x-frame|x-content|referrer|cache-control"
