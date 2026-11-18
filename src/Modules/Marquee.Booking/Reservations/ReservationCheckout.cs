@@ -2,6 +2,7 @@ using Marquee.Booking.Persistence;
 using Marquee.Booking.Seats;
 using Marquee.Common.Contracts;
 using Marquee.Common.Results;
+using Marquee.Common.Web;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
@@ -10,10 +11,9 @@ namespace Marquee.Booking.Reservations;
 internal sealed class ReservationCheckout(
     BookingDbContext db, SeatLocks locks, IOptions<BookingOptions> options, TimeProvider time) : IReservationCheckout
 {
-    public async Task<Result<CheckoutQuote>> BeginPaymentAsync(Guid reservationId, Guid sessionId, CancellationToken ct)
+    public async Task<Result<CheckoutQuote>> BeginPaymentAsync(Guid reservationId, TicketOwner owner, CancellationToken ct)
     {
-        var reservation = await db.Reservations.SingleOrDefaultAsync(
-            r => r.Id == reservationId && r.SessionId == sessionId, ct);
+        var reservation = await db.Reservations.Where(Ownership.OwnedBy(owner)).SingleOrDefaultAsync(r => r.Id == reservationId, ct);
         if (reservation is null)
         {
             return Error.NotFound("reservation_not_found", "This reservation does not exist.");

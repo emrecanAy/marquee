@@ -28,6 +28,7 @@ public static class BookingModule
         services.AddScoped<HoldSeats.Handler>();
         services.AddScoped<ReservationExpiry>();
         services.AddScoped<IReservationCheckout, ReservationCheckout>();
+        services.AddScoped<IGuestReservations, GuestReservations>();
 
         services.AddIntegrationEventHandler<ShowtimeScheduled, ShowtimeScheduledHandler>();
         services.AddIntegrationEventHandler<PaymentSucceeded, PaymentSucceededHandler>();

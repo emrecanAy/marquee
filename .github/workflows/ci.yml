@@ -20,6 +20,14 @@ jobs:
           global-json-file: global.json
       - run: dotnet restore Marquee.slnx
       - run: dotnet build Marquee.slnx --no-restore --configuration Release
+      # Fails when an entity change has no migration yet.
+      - name: Migrations match the model
+        run: |
+          dotnet tool install --global dotnet-ef --version "10.*"
+          for module in Audit Booking Catalog Identity Payments; do
+            dotnet ef migrations has-pending-model-changes --no-build --configuration Release \
+              --project "src/Modules/Marquee.$module" --startup-project src/Marquee.Api --context "${module}DbContext"
+          done
       # Integration tests start PostgreSQL and Redis through Testcontainers on the runner's Docker.
       - run: dotnet test Marquee.slnx --no-build --configuration Release --logger "console;verbosity=normal"
 

@@ -14,6 +14,8 @@ public static class ProblemResults
             ErrorKind.NotFound => StatusCodes.Status404NotFound,
             ErrorKind.Forbidden => StatusCodes.Status403Forbidden,
             ErrorKind.Conflict => StatusCodes.Status409Conflict,
+            ErrorKind.Unauthorized => StatusCodes.Status401Unauthorized,
+            ErrorKind.TooManyRequests => StatusCodes.Status429TooManyRequests,
             _ => StatusCodes.Status500InternalServerError,
         };
 
@@ -22,4 +24,8 @@ public static class ProblemResults
             statusCode: status,
             extensions: new Dictionary<string, object?> { ["code"] = error.Code });
     }
+
+    /// <summary>200 with the value, or the problem response for the error.</summary>
+    public static IResult ToHttp<T>(this Result<T> result) =>
+        result.Match(value => Microsoft.AspNetCore.Http.Results.Ok(value), error => error.ToProblem());
 }

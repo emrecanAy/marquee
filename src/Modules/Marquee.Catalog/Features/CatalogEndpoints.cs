@@ -26,9 +26,11 @@ internal static class CatalogEndpoints
 
     public static void Map(IEndpointRouteBuilder api)
     {
-        api.MapGet("/movies", ListMovies).WithTags("Catalog");
-        api.MapGet("/movies/{movieId:guid}", GetMovie).WithTags("Catalog");
-        api.MapGet("/showtimes/{showtimeId:guid}", GetShowtime).WithTags("Catalog");
+        // The programme is public: anyone may browse it without a session.
+        var catalog = api.MapGroup("").AllowAnonymous().WithTags("Catalog");
+        catalog.MapGet("/movies", ListMovies);
+        catalog.MapGet("/movies/{movieId:guid}", GetMovie);
+        catalog.MapGet("/showtimes/{showtimeId:guid}", GetShowtime);
     }
 
     private static async Task<IReadOnlyList<MovieSummary>> ListMovies(

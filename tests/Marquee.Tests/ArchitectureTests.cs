@@ -2,6 +2,7 @@ using System.Reflection;
 using Marquee.Audit;
 using Marquee.Booking;
 using Marquee.Catalog;
+using Marquee.Identity;
 using Marquee.Payments;
 
 namespace Marquee.Tests;
@@ -13,6 +14,7 @@ public sealed class ArchitectureTests
         typeof(AuditModule).Assembly,
         typeof(BookingModule).Assembly,
         typeof(CatalogModule).Assembly,
+        typeof(IdentityModule).Assembly,
         typeof(PaymentsModule).Assembly,
     ];
 

@@ -1,5 +1,6 @@
 using System.Security.Cryptography;
 using Marquee.Common.Results;
+using Marquee.Common.Web;
 
 namespace Marquee.Booking.Domain;
 
@@ -24,6 +25,9 @@ internal sealed class Reservation
 
     public Guid SessionId { get; private set; }
 
+    /// <summary>The account the seats belong to, once the visitor has signed in; empty for a guest.</summary>
+    public Guid? AccountId { get; private set; }
+
     public ReservationStatus Status { get; private set; }
 
     public List<string> SeatLabels { get; private set; } = [];
@@ -40,12 +44,13 @@ internal sealed class Reservation
     public uint Version { get; private set; }
 
     public static Reservation Hold(
-        Guid id, Guid screeningId, Guid sessionId, IReadOnlyCollection<Seat> seats, DateTimeOffset now, TimeSpan holdFor) =>
+        Guid id, Guid screeningId, TicketOwner owner, IReadOnlyCollection<Seat> seats, DateTimeOffset now, TimeSpan holdFor) =>
         new()
         {
             Id = id,
             ScreeningId = screeningId,
-            SessionId = sessionId,
+            SessionId = owner.SessionId,
+            AccountId = owner.AccountId,
             Status = ReservationStatus.Pending,
             SeatLabels = seats.Select(seat => seat.Label).Order(StringComparer.Ordinal).ToList(),
             Amount = seats.Sum(seat => seat.Price),

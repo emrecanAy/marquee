@@ -34,7 +34,7 @@ internal static class PayReservation
                 CancellationToken ct) =>
             {
                 var result = await handler.HandleAsync(
-                    reservationId, user.GetSessionId(), idempotencyKey, request.PaymentToken, ct);
+                    reservationId, user.GetTicketOwner(), idempotencyKey, request.PaymentToken, ct);
                 // 202: the payment is recorded and will be charged; the outcome is read from GET /payments/{id}.
                 return result.Match(
                     payment => Results.Accepted($"/api/payments/{payment.Id}", payment),
@@ -46,8 +46,10 @@ internal static class PayReservation
     internal sealed class Handler(PaymentsDbContext db, IReservationCheckout checkout, TimeProvider time)
     {
         public async Task<Result<PaymentResponse>> HandleAsync(
-            Guid reservationId, Guid sessionId, string? idempotencyKey, string? paymentToken, CancellationToken ct)
+            Guid reservationId, TicketOwner owner, string? idempotencyKey, string? paymentToken, CancellationToken ct)
         {
+            // Payments belong to the browser session that started them; the reservation may also be the account's.
+            var sessionId = owner.SessionId;
             if (string.IsNullOrWhiteSpace(idempotencyKey) || idempotencyKey.Length > 100)
             {
                 return Error.Validation("idempotency_key_required", "Send an Idempotency-Key header of at most 100 characters.");
@@ -64,7 +66,7 @@ internal static class PayReservation
                 return Replay(replay, reservationId);
             }
 
-            var quote = await checkout.BeginPaymentAsync(reservationId, sessionId, ct);
+            var quote = await checkout.BeginPaymentAsync(reservationId, owner, ct);
             if (!quote.IsSuccess)
             {
                 return quote.Error;

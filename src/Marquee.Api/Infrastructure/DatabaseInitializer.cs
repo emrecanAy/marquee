@@ -1,6 +1,7 @@
 using Marquee.Audit;
 using Marquee.Booking;
 using Marquee.Catalog;
+using Marquee.Identity;
 using Marquee.Payments;
 
 namespace Marquee.Api.Infrastructure;
@@ -18,6 +19,7 @@ internal static class DatabaseInitializer
         var services = scope.ServiceProvider;
         var seedDemoData = app.Configuration.GetValue("Database:SeedDemoData", false);
 
+        await services.MigrateIdentityAsync(seedDemoData, ct);
         await services.MigrateBookingAsync(ct);
         await services.MigratePaymentsAsync(ct);
         await services.MigrateAuditAsync(ct);

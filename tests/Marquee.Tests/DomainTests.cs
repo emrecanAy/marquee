@@ -1,5 +1,6 @@
 using Marquee.Booking.Domain;
 using Marquee.Catalog.Domain;
+using Marquee.Common.Web;
 
 namespace Marquee.Tests;
 
@@ -36,7 +37,7 @@ public sealed class DomainTests
     public void A_reservation_totals_its_seats_and_expires_after_the_hold_duration()
     {
         var reservation = Reservation.Hold(
-            Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), [NewSeat("A2", 100m), NewSeat("A1", 140m)], Now, HoldFor);
+            Guid.NewGuid(), Guid.NewGuid(), new TicketOwner(Guid.NewGuid(), null), [NewSeat("A2", 100m), NewSeat("A1", 140m)], Now, HoldFor);
 
         Assert.Equal(240m, reservation.Amount);
         Assert.Equal(new[] { "A1", "A2" }, reservation.SeatLabels);
@@ -91,7 +92,7 @@ public sealed class DomainTests
     }
 
     private static Reservation NewReservation() =>
-        Reservation.Hold(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), [NewSeat("A1")], Now, HoldFor);
+        Reservation.Hold(Guid.NewGuid(), Guid.NewGuid(), new TicketOwner(Guid.NewGuid(), null), [NewSeat("A1")], Now, HoldFor);
 
     private static Seat NewSeat(string label, decimal price = 100m) => new()
     {

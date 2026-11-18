@@ -1,5 +1,7 @@
 using System.Text.Json;
 using Marquee.Common.Persistence;
+using Marquee.Common.Security;
+using Marquee.Common.Web;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Routing;
@@ -11,6 +13,9 @@ namespace Marquee.Audit;
 
 public static class AuditModule
 {
+    /// <summary>The trail shows every reservation and payment change, so it is for auditors only.</summary>
+    internal static readonly Permission ReadTrail = new("audit.read", "Değişiklik kaydını okur", Roles.Auditor);
+
     internal sealed record ChangeResponse(
         long Id, string Table, string Operation, JsonElement? Before, JsonElement? After, DateTimeOffset CommittedAt);
 
@@ -21,6 +26,7 @@ public static class AuditModule
         services.AddOptions<AuditOptions>().BindConfiguration("Audit");
         services.AddModuleDbContext<AuditDbContext>(AuditDbContext.Schema);
         services.AddHostedService<ChangeEventConsumer>();
+        services.AddPermissions(ReadTrail);
         return services;
     }
 
@@ -38,6 +44,7 @@ public static class AuditModule
                     change.Id, change.Table, change.Operation, ToJson(change.Before), ToJson(change.After),
                     change.CommittedAt)));
             })
+            .RequirePermission(ReadTrail)
             .WithTags("Audit");
 
     public static Task MigrateAuditAsync(this IServiceProvider services, CancellationToken ct) =>

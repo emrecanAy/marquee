@@ -31,7 +31,11 @@ services:
     environment:
       ConnectionStrings__Postgres: Host=postgres;Database=marquee;Username=marquee;Password=${POSTGRES_PASSWORD}
       ConnectionStrings__Redis: redis:6379
-      Sessions__SigningKey: ${SESSIONS_SIGNING_KEY:?set SESSIONS_SIGNING_KEY in .env}
+      Identity__SigningKey: ${IDENTITY_SIGNING_KEY:?set IDENTITY_SIGNING_KEY in .env}
+      Identity__EncryptionKey: ${IDENTITY_ENCRYPTION_KEY:?set IDENTITY_ENCRYPTION_KEY in .env}
+      Identity__AdminEmail: ${ADMIN_EMAIL:?set ADMIN_EMAIL in .env}
+      Identity__AdminPassword: ${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+      ForwardedHeaders__KnownNetworks__0: 172.16.0.0/12
       Database__MigrateOnStartup: "true"
       Database__SeedDemoData: ${SEED_DEMO_DATA:-false}
     depends_on:
