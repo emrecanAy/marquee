@@ -171,8 +171,14 @@ internal sealed class Sessions(
         return Error.Unauthorized(code, "The session has ended.");
     }
 
-    private void SetCookie(HttpContext http, string token, DateTimeOffset expires) =>
+    private void SetCookie(HttpContext http, string token, DateTimeOffset expires)
+    {
+        // A failed resume earlier in the same request may have queued a deletion; the new cookie replaces it.
+        var prefix = Options.SessionCookieName + "=";
+        var headers = http.Response.Headers;
+        headers.SetCookie = new(headers.SetCookie.Where(c => c is not null && !c.StartsWith(prefix, StringComparison.Ordinal)).ToArray());
         http.Response.Cookies.Append(Options.SessionCookieName, token, CookieOptions(expires));
+    }
 
     private void ClearCookie(HttpContext http) =>
         http.Response.Cookies.Delete(Options.SessionCookieName, CookieOptions(expires: null));
