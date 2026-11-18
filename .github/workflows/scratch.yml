@@ -4,6 +4,7 @@ on:
     branches: [work]
 jobs:
   api:
+    if: false
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
@@ -34,11 +35,11 @@ jobs:
           curl -s -o /dev/null -w "%{http_code}\n" $B/api/movies
           curl -s -c jar $H -X POST $B/api/auth/session | head -c 200; echo
           curl -s -o /dev/null -w "nohdr %{http_code}\n" -X POST $B/api/auth/session
-          T=$(curl -s $H -X POST $B/api/auth/sign-in -d '{"email":"denetci@marquee.local","password":"marquee-demo-2026"}' | jq -r .accessToken)
+          T=$(curl -s $H -X POST $B/api/auth/sign-in -d '{"email":"denetci@marquee.local","password":"marquee-demo-2026"}' | jq -r .session.accessToken)
           curl -s -o /dev/null -w "auditor audit %{http_code}\n" -H "Authorization: Bearer $T" $B/api/audit/changes
           curl -s -o /dev/null -w "auditor programme %{http_code}\n" -H "Authorization: Bearer $T" $B/api/programme/halls
           curl -s -o /dev/null -w "auditor staff %{http_code}\n" -H "Authorization: Bearer $T" $B/api/staff
-          A=$(curl -s $H -X POST $B/api/auth/sign-in -d '{"email":"admin@marquee.local","password":"marquee-platform-2026"}' | jq -r .accessToken)
+          A=$(curl -s $H -X POST $B/api/auth/sign-in -d '{"email":"admin@marquee.local","password":"marquee-platform-2026"}' | jq -r .session.accessToken)
           curl -s -H "Authorization: Bearer $A" $B/api/staff | head -c 400; echo
           curl -s -H "Authorization: Bearer $A" $B/api/me; echo
           curl -sI -H "Authorization: Bearer $A" $B/api/me | grep -iE "x-frame|x-content|referrer|cache-control"
