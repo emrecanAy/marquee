@@ -24,6 +24,8 @@ jobs:
       - run: docker compose up -d --build --wait --wait-timeout 300 || (docker compose logs api | tail -60; exit 1)
       - name: smoke
         run: |
+          for i in $(seq 1 60); do [ "$(curl -s -o /dev/null -w '%{http_code}' localhost:8080/api/movies)" = 200 ] && break; sleep 3; done
+          docker compose ps; docker compose logs api | tail -40
           set -x
           H='-H X-Requested-With:marquee -H Content-Type:application/json'
           B=http://localhost:8080
